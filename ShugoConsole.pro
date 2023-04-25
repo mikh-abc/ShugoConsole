@@ -1,22 +1,10 @@
 QT       += core gui widgets
-CONFIG   += windows resources
+CONFIG += c++20
 
 TARGET = ShugoConsole
 TEMPLATE = app
 
-# Disable automatic manifest generation
-CONFIG -= embed_manifest_exe
-
-win32-g++ {
-    LIBS += -lntdll
-    QMAKE_CXXFLAGS += -std=c++11
-}
-
-win32-msvc* {
-    LIBS += ntdll.lib
-}
-
-# DEFINES += ENABLE_CONSOLE_ACTIVATION
+LIBS += ntdll.lib
 
 SOURCES += main.cpp\
         shugoconsolewidget.cpp \
@@ -47,8 +35,3 @@ FORMS    += shugoconsolewidget.ui
 RESOURCES += ShugoConsole.qrc
 
 RC_FILE += ShugoConsole.rc
-
-OTHER_FILES += \
-    ShugoConsole.rc \
-    ShugoConsole.exe.manifest
-

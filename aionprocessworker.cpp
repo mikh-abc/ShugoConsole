@@ -6,10 +6,12 @@
 #include "aionprocessworker.h"
 #include "remotememorylookup.h"
 
-AionProcessWorker::AionProcessWorker(QObject *parent, void* _process_id) :
-    QObject(parent), process_id(_process_id), hProcess(NULL), timer(NULL)
+AionProcessWorker::AionProcessWorker(QObject *parent, void* _process_id)
+    : QObject(parent)
+    , process_id(_process_id)
+    , hProcess(nullptr)
+    , timer(nullptr)
 {
-
 }
 
 AionProcessWorker::~AionProcessWorker()
@@ -24,26 +26,26 @@ void AionProcessWorker::updateVars(const QHash<QString, QVariant>& updateVariabl
     QList<QString> update_keys = updateVariables.keys();
     QList<QString> worker_keys = consoleVariables.keys();
 
-    foreach(QString s, worker_keys)
+    for(const QString& key: qAsConst(worker_keys))
     {
-        if(!update_keys.contains(s))
-            consoleVariables.remove(s);
+        if(!update_keys.contains(key))
+            consoleVariables.remove(key);
     }
 
-    foreach(QString s, update_keys)
+    for(const QString& key: qAsConst(update_keys))
     {
-        if(consoleVariables.contains(s))
+        if(consoleVariables.contains(key))
         {
             ConsoleVariable cv;
-            cv.cvar = consoleVariables[s].cvar;
-            cv.wantedValue = updateVariables[s];
-            consoleVariables[s] = cv;
+            cv.cvar = consoleVariables[key].cvar;
+            cv.wantedValue = updateVariables[key];
+            consoleVariables[key] = cv;
         }
         else
         {
             ConsoleVariable cv;
-            cv.wantedValue = updateVariables[s];
-            consoleVariables.insert(s, cv);
+            cv.wantedValue = updateVariables[key];
+            consoleVariables.insert(key, cv);
         }
     }
 }
@@ -61,7 +63,7 @@ void AionProcessWorker::periodicMemoryScan()
         QMutexLocker lock(&varsLock);
 
         QList<QString> keys = consoleVariables.keys();
-        foreach(const QString& key, keys)
+        for(const QString& key: qAsConst(keys))
         {
             CryCVar cvar = consoleVariables[key].cvar;
             if(!cvar.valid())
@@ -71,7 +73,7 @@ void AionProcessWorker::periodicMemoryScan()
                 if(processIs64 && sizeof(void *) != 8)
                 {
                     emit stateUpdate(this, E_PROCESS_IS_64);
-                    QMetaObject::invokeMethod(thread(),"quit",Qt::QueuedConnection);
+                    QMetaObject::invokeMethod(thread(), "quit", Qt::QueuedConnection);
                     break;
                 }
 
@@ -82,7 +84,7 @@ void AionProcessWorker::periodicMemoryScan()
 
                 if(address_of_cvar)
                 {
-                    consoleVariables[key].cvar = cvar = CryCVar(hProcess, (char*)address_of_cvar, processIs64);
+                    consoleVariables[key].cvar = cvar = CryCVar(hProcess, reinterpret_cast<char*>(address_of_cvar), processIs64);
                 }
             }
 
@@ -146,7 +148,7 @@ void AionProcessWorker::periodicMemoryScan()
     else
     {
         emit stateUpdate(this, E_OPEN_PROCESS_FAILED);
-        QMetaObject::invokeMethod(thread(),"quit",Qt::QueuedConnection);
+        QMetaObject::invokeMethod(thread(), "quit", Qt::QueuedConnection);
     }
 }
 

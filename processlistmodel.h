@@ -10,7 +10,7 @@ class ProcessListModel : public QAbstractListModel
 {
      Q_OBJECT
 public:
-    ProcessListModel(QObject * parent = 0);
+    ProcessListModel(QObject * parent = nullptr);
 
     void addProcess(HANDLE h);
     void removeProcess(HANDLE h);

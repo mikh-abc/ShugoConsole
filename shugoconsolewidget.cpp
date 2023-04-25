@@ -9,7 +9,8 @@
 #include <QSettings>
 
 #include <QTranslator>
-
+#include <QDesktopServices>
+#include <QUrl>
 
 ShugoConsoleWidget::ShugoConsoleWidget(QWidget *parent) :
     QWidget(parent, Qt::Tool | Qt::WindowStaysOnTopHint),
@@ -45,7 +46,6 @@ ShugoConsoleWidget::ShugoConsoleWidget(QWidget *parent) :
 
     _editors.append(new DoubleSpinVariableEditor(this, "g_minFov", "EnableFOV", "FOV", ui->fovCheck, ui->fovSpinBox, 90.0, 60.0, 170.0));
 
-    _editors.append(new BoolComboVariableEditor(this, "g_chatlog", "g_chatlog_monitor", "g_chatlog_value", ui->chatLogCheck, ui->chatLogCombo, true));
     _editors.append(new DoubleSpinVariableEditor(this, "g_camMax", "g_camMax_monitor", "g_camMax_value", ui->cammaxCheck, ui->cammaxSpinBox, 28.0, 5.0, 50.0));
     _editors.append(new BoolComboVariableEditor(this, "d3d9_TripleBuffering", "d3d9_TripleBuffering_monitor", "d3d9_TripleBuffering_value", ui->tripleBufferingCheck, ui->tripleBufferingCombo, true));
     _editors.append(new BoolComboVariableEditor(this, "g_maxfps", "g_maxfps_monitor", "g_maxfps_value", ui->maxfpsCheck, ui->maxfpsCombo, false, 64, 0));
@@ -150,7 +150,7 @@ void ShugoConsoleWidget::resetDefaults(bool)
 void ShugoConsoleWidget::onScanTimer()
 {
 
-    QList<HANDLE> sys_aion_process_list = findProcessHandleByImageName("aion.bin;aion.exe;aion.bin.exe");
+    QList<HANDLE> sys_aion_process_list = findProcessHandleByImageName("aion.bin;aion.exe;aion.bin.exe;aionclassic.bin");
     QList<HANDLE> current_process_list = _workersHash.keys();
 
     foreach(HANDLE h, current_process_list)
@@ -185,10 +185,16 @@ void ShugoConsoleWidget::onScanTimer()
             worker->moveToThread(thread);
             worker->updateVars(_consoleVars);
             _processListModel->addProcess(h);
-            connect(worker,&AionProcessWorker::stateUpdate, this, &ShugoConsoleWidget::onStateUpdate, Qt::QueuedConnection);
+            connect(worker, &AionProcessWorker::stateUpdate, this, &ShugoConsoleWidget::onStateUpdate, Qt::QueuedConnection);
             thread->start();
             QMetaObject::invokeMethod(worker, "init", Qt::QueuedConnection);
             _workersHash.insert(h, worker);
         }
     }
 }
+
+void ShugoConsoleWidget::on_pushButton_clicked()
+{
+    QDesktopServices::openUrl(QUrl("http://aioninfo.com/"));
+}
+

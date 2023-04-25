@@ -35,6 +35,9 @@ public slots:
     void varDisable(QString);
 
     void saveSettings();
+private slots:
+    void on_pushButton_clicked();
+
 private:
 
     void updateProcessesVars();
