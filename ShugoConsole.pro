@@ -4,7 +4,7 @@ CONFIG += c++20
 TARGET = ShugoConsole
 TEMPLATE = app
 
-LIBS += ntdll.lib
+LIBS += ntdll.lib User32.lib
 
 SOURCES += main.cpp\
         shugoconsolewidget.cpp \

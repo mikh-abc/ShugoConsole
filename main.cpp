@@ -6,8 +6,11 @@
 
 int main(int argc, char *argv[])
 {
+#if QT_VERSION < QT_VERSION_CHECK(6, 0, 0)
+    SetProcessDPIAware();
+    QApplication::setAttribute(Qt::AA_EnableHighDpiScaling);
+#endif
     QApplication app(argc, argv);
-
     app.setStyle("Fusion");
 
     QTranslator translator;
